@@ -4,6 +4,7 @@ from random import random, randint
 from math import sqrt, exp, cos
 from multiprocessing import Pool
 from numpy import arange
+import csv
 
 def target_function(params):
 
@@ -59,13 +60,14 @@ def differential_evolution(cr, f, np, dim, it, b_lo=-1, b_up=1):
 
 def run(params):
 
-    cr_range, f_range, repetitions, generation_size, \
+    cr_range, f_range, increment_step, repetitions, generation_size, \
     dimensions, iterations, b_lower, b_upper = params
 
     fitness = []
 
-    cr_vals = [round(x, 6) for x in arange(cr_range[0], cr_range[1], 0.1).tolist()]
-    f_vals = [round(x, 6) for x in arange(f_range[0], f_range[1], 0.1).tolist()]
+    cr_vals = [round(x, 6) for x in arange(cr_range[0], cr_range[1], increment_step).tolist()]
+    f_vals = [round(x, 6) for x in arange(f_range[0], f_range[1], increment_step).tolist()]
+
 
     for cr in cr_vals:
         for f in f_vals:
@@ -85,10 +87,11 @@ def init():
     cpu_cores = 4
     cr_range = [0, 1]
     f_range = [0, 2]
+    increment_step = 0.05
     repetitions = 10
     generation_size = 10
     dimensions = 2
-    iterations = 200
+    iterations = 20
     b_lower = -1
     b_upper = 1
 
@@ -103,6 +106,7 @@ def init():
                 (core / cpu_cores) * (f_range[1] - f_range[0]),
                 ((core + 1) / cpu_cores) * (f_range[1] - f_range[0]),
             ],
+            increment_step,
             repetitions,
             generation_size,
             dimensions,
@@ -112,7 +116,17 @@ def init():
         ])
 
     workers = Pool(cpu_cores)
-    print(workers.map(run, worker_tasks))
+    worker_results = workers.map(run, worker_tasks)
+
+    results = []
+    for core in worker_results:
+        for result in core:
+            results.append(result)
+
+    with open('results.csv', 'w', newline='\n') as csvfile:
+        writer = csv.writer(csvfile, delimiter=' ', quotechar=';', quoting=csv.QUOTE_MINIMAL)
+        for line in range(len(results)):
+            writer.writerow(results[line])
 
 if __name__ == '__main__':
     init()
