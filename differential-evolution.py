@@ -1,87 +1,118 @@
 #! /usr/bin/python3
 
-import random
-import math
-import matplotlib.pyplot as plt
+from random import random, randint
+from math import sqrt, exp, cos
+from multiprocessing import Pool
+from numpy import arange
 
 def target_function(params):
 
-    result = 0
-
-    # Ackley
-    result = -20 * math.exp(-0.2 * math.sqrt(0.5 * (params[0] ** 2 + params[1] ** 2))) - \
-            math.exp(0.5 * (math.cos(6.2 * params[0]) + math.cos(6.2 * params[1]))) + 2.71 + 20
+    result = -20 * exp(-0.2 * sqrt(0.5 * (params[0] ** 2 + params[1] ** 2))) - \
+             exp(0.5 * (cos(6.2 * params[0]) + cos(6.2 * params[1]))) + 2.71 + 20
 
     # Beale
-    # result = (1.5 - params[0] + params[0] * params[1]) ** 2 + (2.25 - params[0] + params[0] * (params[1] ** 2)) ** 2 + \
-    #         (2.625 - params[0] + params[0] * (params[1] ** 3)) ** 2
+    # result = (1.5 - params[0] + params[0] * params[1]) ** 2 + (2.25 - params[0] \
+    #          + params[0] * (params[1] ** 2)) ** 2 + \
+    #          (2.625 - params[0] + params[0] * (params[1] ** 3)) ** 2
 
     # Rosenbrock
+    # result = 0
     # for i in range(len(params) - 1):
     #     result += 100 * (params[i + 1] - params[i] ** 2) ** 2 + (params[i] - 1) ** 2
 
     return result
 
-def diff_evol(cr, f, np, dim, it, b_lo=-1, b_up=1):
+def differential_evolution(cr, f, np, dim, it, b_lo=-1, b_up=1):
 
-    agents = []
-
-    for x in range(np):
-        a = []
-        for y in range(dim):
-            a.append(random.random() * (b_up - b_lo))
-        agents.append(a)
+    agents = [[(random() * (b_up - b_lo)) for x in range(dim)] for a in range(np)]
 
     for i in range(it):
-
         for x in range(np):
 
-            a, b, c = random.randint(0, np - 1), random.randint(0, np - 1), random.randint(0, np - 1)
+            a, b, c = randint(0, np - 1), randint(0, np - 1), randint(0, np - 1)
             while a == b or b == c or c == a or a == x or b == x or c == x:
-                a, b, c = random.randint(0, np - 1), random.randint(0, np - 1), random.randint(0, np - 1)
+                a, b, c = randint(0, np - 1), randint(0, np - 1), randint(0, np - 1)
 
-            R = random.randint(0, dim)
-
-            y = [None] * (dim)
+            R = randint(0, dim)
+            y = [None] * dim
 
             for i in range(dim):
-
-                ri = random.random()
-
+                ri = random()
                 if ri < cr or i == R:
                     y[i] = agents[a][i] + f * (agents[b][i] - agents[c][i])
-
                 else:
                     y[i] = agents[x][i]
 
             if target_function(y) < target_function(agents[x]):
                 agents[x] = y
 
-            # plt.scatter(agents[x][0], agents[x][1])
-
-        # plt.xlim(b_lo, b_up)
-        # plt.ylim(b_lo, b_up)
-        # plt.show()
-
     best = agents[0]
+    best_fitness = target_function(agents[0])
 
     for a in agents:
-
-        if target_function(a) < target_function(best):
-
+        if target_function(a) < best_fitness:
             best = a
+            best_fitness = target_function(a)
 
-    return best
+    return target_function(best)
+
+
+def run(params):
+
+    cr_range, f_range, repetitions, generation_size, \
+    dimensions, iterations, b_lower, b_upper = params
+
+    fitness = []
+
+    cr_vals = [round(x, 6) for x in arange(cr_range[0], cr_range[1], 0.1).tolist()]
+    f_vals = [round(x, 6) for x in arange(f_range[0], f_range[1], 0.1).tolist()]
+
+    for cr in cr_vals:
+        for f in f_vals:
+            average_fitness = 0
+            for r in range(repetitions):
+                average_fitness += differential_evolution(cr, f, \
+                                   generation_size, dimensions, iterations, \
+                                   b_lower, b_upper)
+            average_fitness /= repetitions
+            fitness.append([cr, f, average_fitness])
+
+    return fitness
+
+
+def init():
+
+    cpu_cores = 4
+    cr_range = [0, 1]
+    f_range = [0, 2]
+    repetitions = 10
+    generation_size = 10
+    dimensions = 2
+    iterations = 200
+    b_lower = -1
+    b_upper = 1
+
+    worker_tasks = []
+    for core in range(cpu_cores):
+        worker_tasks.append([
+            [
+                (core / cpu_cores) * (cr_range[1] - cr_range[0]),
+                ((core + 1) / cpu_cores) * (cr_range[1] - cr_range[0]),
+            ],
+            [
+                (core / cpu_cores) * (f_range[1] - f_range[0]),
+                ((core + 1) / cpu_cores) * (f_range[1] - f_range[0]),
+            ],
+            repetitions,
+            generation_size,
+            dimensions,
+            iterations,
+            b_lower,
+            b_upper
+        ])
+
+    workers = Pool(cpu_cores)
+    print(workers.map(run, worker_tasks))
 
 if __name__ == '__main__':
-
-    best = None
-
-    for cr in range(0, 110, 1):
-        for f in range(0, 210, 1):
-            pom = diff_evol(cr / 100, f / 100, 200, 2, 1000, -10, 10) #cr, f, np, dim, it, b_lo=-1, b_up=1
-            if best == None or target_function(pom) < best[2]:
-                best = [cr / 100, f / 100, target_function(pom), pom]
-
-    print(best)
-            
+    init()
