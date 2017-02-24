@@ -92,10 +92,8 @@ def run(params):
     cr_vals = [round(x, 6) for x in arange(cr_range[0], cr_range[1], increment_step).tolist()]
     f_vals = [round(x, 6) for x in arange(f_range[0], f_range[1], increment_step).tolist()]
 
-    print(len(arange(cr_range[0], cr_range[1], 0.01)))
-
-    for cr in cr_vals:
-        for f in f_vals:
+    for f in f_vals:
+        for cr in cr_vals:
 
             average_fitness = 0
             average_position = [0] * dimensions
@@ -119,11 +117,11 @@ def init():
     cpu_cores = 4
     cr_range = [0, 1]
     f_range = [0, 2]
-    increment_step = 0.1
-    repetitions = 10
-    generation_size = 10
+    increment_step = 0.01
+    repetitions = 2
+    generation_size = 5
     dimensions = 2
-    iterations = 20
+    iterations = 5
     b_lower = -1
     b_upper = 1
 
@@ -147,12 +145,8 @@ def init():
             b_upper
         ])
 
-    print (worker_tasks)
-
     workers = Pool(cpu_cores)
     worker_results = workers.map(run, worker_tasks)
-
-    print(len(worker_results[0]))
 
     results = []
     for core in worker_results:

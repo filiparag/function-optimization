@@ -7,9 +7,9 @@ from matplotlib import cm
 import numpy as np
 import csv
 
-X = np.arange(0, 1, 0.01)
-Y = np.arange(0, 2, 0.01)
-Z = np.zeros(shape=(20000))
+X = np.arange(0, 1, 0.02)
+Y = np.arange(0, 2, 0.02)
+Z = np.zeros(shape=(5000))
 
 z_counter = 0
 with open('results.csv', newline='\n') as csvfile:
@@ -18,13 +18,20 @@ with open('results.csv', newline='\n') as csvfile:
         Z[z_counter] = row[2]
         z_counter += 1
 
+print(X.shape)
+print(Y.shape)
+
 X, Y = np.meshgrid(X, Y)
-Z = Z.reshape(200, 100)
+Z = Z.reshape(100, 50)
 
+print(Z.shape)
 
-fig = plt.figure()
-ax = fig.add_subplot(1, 1, 1, projection='3d')
-surf = ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap=cm.coolwarm, linewidth=0, antialiased=False)
+# fig = plt.figure()
+# ax = fig.add_subplot(1, 1, 1, projection='3d')
+# surf = ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap=cm.coolwarm, linewidth=0, antialiased=False)
+
+plt.contourf(X, Y, Z, 5)
+plt.colorbar()
 
 plt.xlabel('CR')
 plt.ylabel('F')
