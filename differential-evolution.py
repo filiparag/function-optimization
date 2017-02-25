@@ -1,7 +1,7 @@
 #! /usr/bin/python3
 
 from random import random, randint
-from math import sqrt, exp, cos
+from math import sqrt, exp, cos, sin, pi
 from multiprocessing import Pool
 from numpy import arange
 import csv
@@ -9,8 +9,8 @@ import csv
 def target_function(params):
 
     #Ackley
-    result = -20 * exp(-0.2 * sqrt(0.5 * (params[0] ** 2 + params[1] ** 2))) - \
-             exp(0.5 * (cos(6.2 * params[0]) + cos(6.2 * params[1]))) + 2.71 + 20
+    # result = -20 * exp(-0.2 * sqrt(0.5 * (params[0] ** 2 + params[1] ** 2))) - \
+    #          exp(0.5 * (cos(6.2 * params[0]) + cos(6.2 * params[1]))) + 2.71 + 20
 
     # Beale
     # result = (1.5 - params[0] + params[0] * params[1]) ** 2 + (2.25 - params[0] \
@@ -41,9 +41,9 @@ def target_function(params):
     #          ** 2 + params[1] ** 2)
 
     # Rosenbrock
-    # result = 0
-    # for i in range(len(params) - 1):
-    #     result += 100 * (params[i + 1] - params[i] ** 2) ** 2 + (params[i] - 1) ** 2
+    result = 0
+    for i in range(len(params) - 1):
+        result += 100 * (params[i + 1] - params[i] ** 2) ** 2 + (params[i] - 1) ** 2
 
     return result
 
@@ -118,10 +118,10 @@ def init():
     cr_range = [0, 1]
     f_range = [0, 2]
     increment_step = 0.01
-    repetitions = 2
-    generation_size = 5
-    dimensions = 2
-    iterations = 5
+    repetitions = 1
+    generation_size = 100
+    dimensions = 10
+    iterations = 20
     b_lower = -1
     b_upper = 1
 

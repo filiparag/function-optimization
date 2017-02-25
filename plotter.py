@@ -2,7 +2,6 @@
 
 from csv import reader
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d.axes3d import Axes3D, get_test_data
 from matplotlib import cm
 import numpy as np
 import csv
@@ -18,22 +17,16 @@ with open('results.csv', newline='\n') as csvfile:
         Z[z_counter] = row[2]
         z_counter += 1
 
-print(X.shape)
-print(Y.shape)
-
 X, Y = np.meshgrid(X, Y)
 Z = Z.reshape(100, 50)
 
-print(Z.shape)
+plt.pcolormesh(X, Y, Z)
 
-# fig = plt.figure()
-# ax = fig.add_subplot(1, 1, 1, projection='3d')
-# surf = ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap=cm.coolwarm, linewidth=0, antialiased=False)
+cb = plt.colorbar()
+cb.ax.get_yaxis().labelpad = 15
+cb.ax.set_ylabel('Fitness', rotation=90)
 
-plt.contourf(X, Y, Z, 5)
-plt.colorbar()
-
-plt.xlabel('CR')
-plt.ylabel('F')
+plt.xlabel('Crossover Probability')
+plt.ylabel('Differential Weight')
 
 plt.show()
