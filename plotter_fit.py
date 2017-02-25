@@ -7,8 +7,8 @@ import numpy as np
 import csv
 from math import log
 
-X = np.arange(0, 1005, 5)
-Y = np.zeros(shape=(201))
+X = np.arange(0, 10005, 5)
+Y = np.zeros(shape=(2001))
 
 y_counter = 0
 with open('results.csv', newline='\n') as csvfile:
