@@ -21,12 +21,12 @@ def differential_evolution(cr, f, np, dim, it, b_lo=-1, b_up=1):
             R = randint(0, dim)
             y = [None] * dim
 
-            for i in range(dim):
+            for j in range(dim):
                 ri = random()
-                if ri < cr or i == R:
-                    y[i] = agents[a][i] + f * (agents[b][i] - agents[c][i])
+                if ri < cr or j == R:
+                    y[j] = agents[a][j] + f * (agents[b][j] - agents[c][j])
                 else:
-                    y[i] = agents[x][i]
+                    y[j] = agents[x][j]
 
             if target_function(y) < target_function(agents[x]):
                 agents[x] = y
@@ -79,7 +79,7 @@ def init():
     f_range = [0, 2]
     increment_step = 0.01
     repetitions = 1
-    generation_size = 100
+    generation_size = 10
     dimensions = 10
     iterations = 20
     b_lower = -1
