@@ -14,6 +14,7 @@ def differential_evolution(params):
     agents = [[(random() * (b_up - b_lo)) for x in range(dim)] for a in range(np)]
 
     results = []
+    best, best_fitness = None, None
 
     for i in range(it_t + 1):
         for x in range(np):
@@ -36,8 +37,10 @@ def differential_evolution(params):
                 agents[x] = y
 
         if i % it_s == 0:
-            best = agents[0]
-            best_fitness = target_function(agents[0])
+
+            if best is None:
+                best = agents[0]
+                best_fitness = target_function(agents[0])
 
             for a in agents:
                 if target_function(a) < best_fitness:
@@ -56,11 +59,11 @@ def init():
     f = 0.4717
     b_lower = -1
     b_upper = 1
-    generation_size = 100
-    dimensions = 50
+    generation_size = 200
+    dimensions = 20
     iteration_step = 5
     iteration_target = 1000
-    repetitions = 16
+    repetitions = 2
 
     worker_tasks = [[
         cr,
