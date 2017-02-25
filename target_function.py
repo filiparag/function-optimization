@@ -2,7 +2,7 @@ from math import sqrt, exp, cos, sin, pi
 
 def target_function(params):
 
-    #Ackley
+    # Ackley
     # result = -20 * exp(-0.2 * sqrt(0.5 * (params[0] ** 2 + params[1] ** 2))) - \
     #          exp(0.5 * (cos(6.2 * params[0]) + cos(6.2 * params[1]))) + 2.71 + 20
 
