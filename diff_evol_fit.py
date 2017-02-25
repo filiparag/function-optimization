@@ -7,11 +7,15 @@ import csv
 from target_function import target_function
 
 
-def differential_evolution(cr, f, np, dim, it, b_lo=-1, b_up=1):
+def differential_evolution(params):
+
+    cr, f, b_lo, b_up, np, dim, it_s, it_t = params
 
     agents = [[(random() * (b_up - b_lo)) for x in range(dim)] for a in range(np)]
 
-    for i in range(it):
+    results = []
+
+    for i in range(it_t + 1):
         for x in range(np):
 
             a, b, c = randint(0, np - 1), randint(0, np - 1), randint(0, np - 1)
@@ -21,109 +25,75 @@ def differential_evolution(cr, f, np, dim, it, b_lo=-1, b_up=1):
             R = randint(0, dim)
             y = [None] * dim
 
-            for i in range(dim):
+            for j in range(dim):
                 ri = random()
-                if ri < cr or i == R:
-                    y[i] = agents[a][i] + f * (agents[b][i] - agents[c][i])
+                if ri < cr or j == R:
+                    y[j] = agents[a][j] + f * (agents[b][j] - agents[c][j])
                 else:
-                    y[i] = agents[x][i]
+                    y[j] = agents[x][j]
 
             if target_function(y) < target_function(agents[x]):
                 agents[x] = y
 
-    best = agents[0]
-    best_fitness = target_function(agents[0])
+        if i % it_s == 0:
+            best = agents[0]
+            best_fitness = target_function(agents[0])
 
-    for a in agents:
-        if target_function(a) < best_fitness:
-            best = a
-            best_fitness = target_function(a)
+            for a in agents:
+                if target_function(a) < best_fitness:
+                    best = a
+                    best_fitness = target_function(a)
 
-    return best
+            results.append(best)
 
-
-def run(params):
-
-    cr_range, f_range, increment_step, repetitions, generation_size, \
-    dimensions, iterations, b_lower, b_upper = params
-
-    fitness = []
-
-    cr_vals = [round(x, 6) for x in arange(cr_range[0], cr_range[1], increment_step).tolist()]
-    f_vals = [round(x, 6) for x in arange(f_range[0], f_range[1], increment_step).tolist()]
-
-    for f in f_vals:
-        for cr in cr_vals:
-
-            average_fitness = 0
-            average_position = [0] * dimensions
-
-            for r in range(repetitions):
-                position = differential_evolution(cr, f, \
-                           generation_size, dimensions, iterations, \
-                           b_lower, b_upper)
-                average_fitness += target_function(position)
-                average_position = [sum(x) for x in zip(average_position, position)]
-
-            average_fitness /= repetitions
-            average_position = [x / repetitions for x in average_position]
-            fitness.append([cr, f, average_fitness, average_position])
-
-    return fitness
+    return results
 
 
 def init():
 
     cpu_cores = 4
-    cr_range = [0, 1]
-    f_range = [0, 2]
-    increment_step = 0.01
-    repetitions = 1
-    generation_size = 100
-    dimensions = 10
-    iterations = 20
+    cr = 0.8803
+    f = 0.4717
     b_lower = -1
     b_upper = 1
+    generation_size = 100
+    dimensions = 50
+    iteration_step = 5
+    iteration_target = 1000
+    repetitions = 16
 
-    worker_tasks = []
-    for core in range(cpu_cores):
-        worker_tasks.append([
-            [
-                (core / cpu_cores) * (cr_range[1] - cr_range[0]),
-                ((core + 1) / cpu_cores) * (cr_range[1] - cr_range[0]),
-            ],
-            [
-                (core / cpu_cores) * (f_range[1] - f_range[0]),
-                ((core + 1) / cpu_cores) * (f_range[1] - f_range[0]),
-            ],
-            increment_step,
-            repetitions,
-            generation_size,
-            dimensions,
-            iterations,
-            b_lower,
-            b_upper
-        ])
+    worker_tasks = [[
+        cr,
+        f,
+        b_lower,
+        b_upper,
+        generation_size,
+        dimensions,
+        iteration_step,
+        iteration_target,
+    ]] * repetitions
 
     workers = Pool(cpu_cores)
-    worker_results = workers.map(run, worker_tasks)
+    worker_results = workers.map(differential_evolution, worker_tasks)
 
     results = []
-    for core in worker_results:
-        for result in core:
-            results.append(result)
+    for i in range(int(iteration_target / iteration_step) + 1):
+        iteration_result = [0] * dimensions
 
-    best_position = results[0]
-    for r in results:
-        if r[2] < best_position[2]:
-            best_position = r
+        for thread in worker_results:
+            iteration_result = [sum(x) for x in zip(iteration_result, thread[i])]
 
-    print(best_position)
+        iteration_result = [x / repetitions for x in iteration_result]
+        results.append(iteration_result)
+
+    print(results[-1])
+
+    fitness = (target_function(r) for r in results)
 
     with open('results.csv', 'w', newline='\n') as csvfile:
         writer = csv.writer(csvfile, delimiter=' ', quotechar=';', quoting=csv.QUOTE_MINIMAL)
-        for line in range(len(results)):
-            writer.writerow(results[line][:3])
+        for line in fitness:
+            writer.writerow([line])
 
 if __name__ == '__main__':
     init()
