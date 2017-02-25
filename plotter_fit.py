@@ -6,12 +6,13 @@ from matplotlib import cm
 import numpy as np
 import csv
 from math import log
+from sys import argv
 
-X = np.arange(0, 10005, 5)
-Y = np.zeros(shape=(2001))
+X = np.arange(0, 1005, 5)
+Y = np.zeros(shape=(201))
 
 y_counter = 0
-with open('results.csv', newline='\n') as csvfile:
+with open(argv[1], newline='\n') as csvfile:
     reader = csv.reader(csvfile, delimiter=' ', quotechar=';', quoting=csv.QUOTE_MINIMAL)
     for row in reader:
         Y[y_counter] = row[0]

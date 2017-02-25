@@ -84,13 +84,13 @@ def init():
     omega = 0.729
     phi_p = 2.05
     phi_g = 2.05
-    b_lower = 0
+    b_lower = -2
     b_upper = 2
-    generation_size = 10
-    dimensions = 10
-    iteration_step = 50
-    iteration_target = 1000000
-    repetitions = 1
+    generation_size = 20
+    dimensions = 20
+    iteration_step = 5
+    iteration_target = 1000
+    repetitions = 10
 
     worker_tasks = [[
         iteration_step,

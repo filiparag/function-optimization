@@ -113,7 +113,7 @@ def init():
     generation_size = 100
     dimensions = 2
     iterations = 100
-    b_lower = 0
+    b_lower = -2
     b_upper = 2
 
     worker_tasks = []

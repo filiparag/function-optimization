@@ -67,7 +67,7 @@ def run(params):
 
             average_fitness /= repetitions
             average_position = [x / repetitions for x in average_position]
-            fitness.append(average_fitness)
+            fitness.append([cr, f, average_fitness])
 
     return fitness
 
@@ -79,11 +79,11 @@ def init():
     f_range = [0, 2]
     increment_step = 0.01
     repetitions = 1
-    generation_size = 10
-    dimensions = 2
-    iterations = 20
-    b_lower = -1
-    b_upper = 1
+    generation_size = 40
+    dimensions = 4
+    iterations = 100
+    b_lower = -2
+    b_upper = 2
 
     worker_tasks = []
     for core in range(cpu_cores):
@@ -115,7 +115,7 @@ def init():
 
     best_fitness = results[0]
     for r in results:
-        if r < best_fitness:
+        if r[2] < best_fitness[2]:
             best_fitness = r
 
     print(best_fitness)
@@ -123,7 +123,7 @@ def init():
     with open('results.csv', 'w', newline='\n') as csvfile:
         writer = csv.writer(csvfile, delimiter=' ', quotechar=';', quoting=csv.QUOTE_MINIMAL)
         for line in results:
-            writer.writerow([line])
+            writer.writerow([line[2]])
 
 
 if __name__ == '__main__':

@@ -57,8 +57,8 @@ def init():
     cpu_cores = 4
     cr = 0.8803
     f = 0.4717
-    b_lower = -1
-    b_upper = 1
+    b_lower = -2
+    b_upper = 2
     generation_size = 200
     dimensions = 20
     iteration_step = 5
