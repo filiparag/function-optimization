@@ -6,19 +6,19 @@ from matplotlib import cm
 import numpy as np
 import csv
 
-X = np.arange(0, 1, 0.02)
-Y = np.arange(0, 2, 0.02)
-Z = np.zeros(shape=(5000))
+X = np.arange(0, 2, 0.02)
+Y = np.arange(0, 3, 0.02)
+Z = np.zeros(shape=(15000))
 
 z_counter = 0
 with open('results.csv', newline='\n') as csvfile:
     spamreader = csv.reader(csvfile, delimiter=' ', quotechar=';', quoting=csv.QUOTE_MINIMAL)
     for row in spamreader:
-        Z[z_counter] = row[2]
+        Z[z_counter] = row[0]
         z_counter += 1
 
 X, Y = np.meshgrid(X, Y)
-Z = Z.reshape(100, 50)
+Z = Z.reshape(150, 100)
 
 plt.pcolormesh(X, Y, Z)
 

@@ -23,6 +23,6 @@ Y = Y.tolist()
 plt.plot(X, Y)
 
 plt.xlabel('Number of iterations')
-plt.ylabel('Fitness [log]')
+plt.ylabel('Fitness')
 
 plt.show()

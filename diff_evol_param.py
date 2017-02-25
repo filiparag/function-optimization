@@ -7,7 +7,7 @@ import csv
 from target_function import target_function
 
 
-def differential_evolution(cr, f, np, dim, it, b_lo=-1, b_up=1):
+def differential_evolution(cr, f, np, dim, it, b_lo, b_up):
 
     agents = [[(random() * (b_up - b_lo)) for x in range(dim)] for a in range(np)]
 
@@ -67,7 +67,7 @@ def run(params):
 
             average_fitness /= repetitions
             average_position = [x / repetitions for x in average_position]
-            fitness.append([cr, f, average_fitness, average_position])
+            fitness.append(average_fitness)
 
     return fitness
 
@@ -80,7 +80,7 @@ def init():
     increment_step = 0.01
     repetitions = 1
     generation_size = 10
-    dimensions = 10
+    dimensions = 2
     iterations = 20
     b_lower = -1
     b_upper = 1
@@ -113,17 +113,18 @@ def init():
         for result in core:
             results.append(result)
 
-    best_position = results[0]
+    best_fitness = results[0]
     for r in results:
-        if r[2] < best_position[2]:
-            best_position = r
+        if r < best_fitness:
+            best_fitness = r
 
-    print(best_position)
+    print(best_fitness)
 
     with open('results.csv', 'w', newline='\n') as csvfile:
         writer = csv.writer(csvfile, delimiter=' ', quotechar=';', quoting=csv.QUOTE_MINIMAL)
-        for line in range(len(results)):
-            writer.writerow(results[line][:3])
+        for line in results:
+            writer.writerow([line])
+
 
 if __name__ == '__main__':
     init()

@@ -37,7 +37,9 @@ class Particle:
 
 
 def pso(params):
+
     it_s, it_t, np, dim, b_up, b_lo, omega, phi_p, phi_g = params
+    
     global swarm_best, swarm_best_fitness
 
     swarm = []
@@ -87,8 +89,8 @@ def init():
     generation_size = 10
     dimensions = 10
     iteration_step = 50
-    iteration_target = 100000
-    repetitions = 2
+    iteration_target = 1000000
+    repetitions = 1
 
     worker_tasks = [[
         iteration_step,
