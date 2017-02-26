@@ -1,10 +1,11 @@
 #! /usr/bin/python3
 
 from random import random, randint
-from multiprocessing import Pool
+# from multiprocessing import Pool
 from numpy import arange
 import csv
 from target_function import target_function
+from scoop import futures
 
 
 def differential_evolution(cr, f, np, dim, it, b_lo, b_up):
@@ -105,8 +106,12 @@ def init():
             b_upper
         ])
 
-    workers = Pool(cpu_cores)
-    worker_results = workers.map(run, worker_tasks)
+    # single computer
+    # workers = Pool(cpu_cores)
+    # worker_results = workers.map(run, worker_tasks)
+
+    # cluster computer
+    worker_results = list(futures.map(run, worker_tasks))
 
     results = []
     for core in worker_results:

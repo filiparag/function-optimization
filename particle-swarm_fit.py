@@ -3,9 +3,10 @@
 import random
 from target_function import target_function
 from random import random, randint, uniform
-from multiprocessing import Pool
+# from multiprocessing import Pool
 from numpy import arange
 import csv
+from scoop import futures
 
 
 swarm_best, swarm_best_fitness = None, None
@@ -104,8 +105,12 @@ def init():
         phi_g
     ]] * repetitions
 
-    workers = Pool(cpu_cores)
-    worker_results = workers.map(pso, worker_tasks)
+    # single computer
+    # workers = Pool(cpu_cores)
+    # worker_results = workers.map(pso, worker_tasks)
+
+    # cluster computer
+    worker_results = list(futures.map(pso, worker_tasks))
 
     results = []
     for i in range(int(iteration_target / iteration_step) + 1):
