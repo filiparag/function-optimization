@@ -36,7 +36,11 @@ def target_function(params):
 
     # Rosenbrock
     result = 0
-    for i in range(len(params) - 1):
-        result += 100 * (params[i + 1] - params[i] ** 2) ** 2 + (params[i] - 1) ** 2
+    try:
+        for i in range(len(params) - 1):
+            result += 100 * (params[i + 1] - params[i] ** 2) ** 2 + (params[i] - 1) ** 2
+
+    except OverflowError:
+        result = float('inf')
 
     return result

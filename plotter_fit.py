@@ -8,8 +8,8 @@ import csv
 from math import log
 from sys import argv
 
-X = np.arange(0, 1005, 5)
-Y = np.zeros(shape=(201))
+X = np.arange(0, 10005, 5)
+Y = np.zeros(shape=(2001))
 
 y_counter = 0
 with open(argv[1], newline='\n') as csvfile:
@@ -19,11 +19,11 @@ with open(argv[1], newline='\n') as csvfile:
         y_counter += 1
 
 Y = Y.tolist()
-# Y = [log(i) if i > 0 else 0 for i in Y]
+Y = [log(i) if i > 0 else float('inf') for i in Y]
 
 plt.plot(X, Y)
 
 plt.xlabel('Number of iterations')
-plt.ylabel('Fitness')
+plt.ylabel('Fitness [log]')
 
 plt.show()
